@@ -190,7 +190,7 @@ class MyApp(App):
             Color(1,1,1,1)
             self.rect = Rectangle(size = self.root.size, pos = self.root.pos)
             
-        self.sound = SoundLoader.load("pokemon_theme.mp3")
+        self.sound = SoundLoader.load("pokemon_theme.wav")
         if self.sound:
             self.sound.loop = True
             self.sound.volume = 0.1
