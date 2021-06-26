@@ -9,36 +9,15 @@ from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle
 from kivy.uix.image import Image
 from kivy.core.audio import SoundLoader
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 from functools import partial
 
-kvWidget = """
 
-MyWidget:
 
-    orientation: 'vertical'
-    
-    canvas:
-    
-        Rectangle:
-        
-            size: self.size
-            
-            pos: self.pos
-            
-            source: 'pokeball.png'
-            
-"""
-
-class MyWidget(BoxLayout):
-
+class EVTrainingLayout(BoxLayout):
     def __init__(self, **kwargs):
-        
-        super().__init__(**kwargs)
-
-class EVTrainingScreen(BoxLayout):
-    def __init__(self, **kwargs):
-        super(EVTrainingScreen, self).__init__(**kwargs)
+        super(EVTrainingLayout, self).__init__(**kwargs)
         self.counter = 0
         self.pokerus = False
         self.noitem = True
@@ -46,7 +25,6 @@ class EVTrainingScreen(BoxLayout):
         self.power = False
         self.orientation = "vertical"
         self.spacing = 10
-        #self.canvas.color.rgb = (255,255,255)
         self.buttons = []
         
         
@@ -58,7 +36,6 @@ class EVTrainingScreen(BoxLayout):
         self.add_widget(self.row2)
         self.add_widget(self.row3)
         
-        #self.pokemonLogo = Builder.load_string(kvWidget) #works but destroys aspect ratio
         self.pokemonLogo = Image(source="pokeball.png")
         
         self.count_lbl = Label(text = "EVs : 0")
@@ -176,8 +153,31 @@ class EVTrainingScreen(BoxLayout):
         
         self.count_lbl.text = "EVs : " + str(self.counter)
         
-        
 
+
+Builder.load_string("""
+<HomeScreen>:
+    BoxLayout:
+        Label:
+            text : "Welcome to the PokeTrainer app."
+        Button:
+            text: "Go to EV training"
+            on_press: root.manager.current = "ev"
+        
+<EVScreen>:
+    BoxLayout:
+        Button:
+            text: "Go to home screen"
+            on_press: root.manager.current = "home"
+
+""")
+
+#Declare screens
+class HomeScreen(Screen):
+    pass
+    
+class EVScreen(Screen):
+    pass
 
 class MyApp(App):
 
@@ -186,13 +186,24 @@ class MyApp(App):
         # Define the window name
         self.title = "PokeTrainer"
         self.icon = "pokeball.png"
-    
-        self.root = EVTrainingScreen()
-        self.root.bind(pos = self._update_rect, size = self._update_rect)
         
-        with self.root.canvas.before:
+        #Create screen manager
+        self.sm = ScreenManager()
+        
+        #Add different screens
+        self.hs = HomeScreen(name="home")
+        self.sm.add_widget(self.hs)
+        self.es = EVScreen(name="ev")
+        self.ev_layout = EVTrainingLayout()
+        self.ev_layout.bind(pos = self._update_rect, size = self._update_rect)
+        self.es.add_widget(self.ev_layout)
+        self.sm.add_widget(self.es)
+        
+        
+        
+        with self.ev_layout.canvas.before:
             Color(1,1,1,1)
-            self.rect = Rectangle(size = self.root.size, pos = self.root.pos)
+            self.rect = Rectangle(size = self.ev_layout.size, pos = self.ev_layout.pos)
             
         self.sound = SoundLoader.load("pokemon_theme.wav")
         if self.sound:
@@ -200,8 +211,8 @@ class MyApp(App):
             self.sound.volume = 0.1
             self.sound.play()
         
-        return self.root
-        
+        return self.sm
+       
     def _update_rect(self,instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
