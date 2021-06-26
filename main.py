@@ -183,6 +183,10 @@ class MyApp(App):
 
     def build(self):
     
+        # Define the window name
+        self.title = "PokeTrainer"
+        self.icon = "pokeball.png"
+    
         self.root = EVTrainingScreen()
         self.root.bind(pos = self._update_rect, size = self._update_rect)
         
