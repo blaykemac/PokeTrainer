@@ -8,6 +8,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle
 from kivy.uix.image import Image
+from kivy.core.audio import SoundLoader
 
 from functools import partial
 
@@ -189,7 +190,11 @@ class MyApp(App):
             Color(1,1,1,1)
             self.rect = Rectangle(size = self.root.size, pos = self.root.pos)
             
-        
+        self.sound = SoundLoader.load("pokemon_theme.mp3")
+        if self.sound:
+            self.sound.loop = True
+            self.sound.volume = 0.1
+            self.sound.play()
         
         return self.root
         
