@@ -1,7 +1,6 @@
 altgraph==0.17
 certifi==2021.5.30
 chardet==4.0.0
-Cython==0.29.23
 docutils==0.17.1
 future==0.18.2
 idna==2.10
